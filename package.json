@@ -1,0 +1,16 @@
+{
+  "name": "tup-programacion-iv-2026-tp1",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "## Indicaciones",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Marquiol Jose",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
