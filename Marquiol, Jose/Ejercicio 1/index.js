@@ -17,7 +17,6 @@ app.get("/", (req, res) => {
   res.send("API de rectángulos funcionando");
 });
 
-// GET para consultar todos los rectángulos
 app.get("/rectangulos", (req, res) => {
   let rectangulosFiltrados = [...rectangulos];
 
@@ -31,27 +30,30 @@ app.get("/rectangulos", (req, res) => {
     const esCuadrado = cuadrado === "true";
 
     rectangulosFiltrados = rectangulosFiltrados.filter(
-      (r) => r.base === r.altura === esCuadrado,
+      (r) => (r.base === r.altura) === esCuadrado,
     );
   }
 
-  const resultado = rectangulosFiltrados.map((r) => ({
-    id: r.id,
-    base: r.base,
-    altura: r.altura,
-    perimetro: 2 * (r.base + r.altura),
-    superficie: r.base * r.altura,
-    cuadrado: r.base === r.altura,
-  }));
+  let resultado = [];
+
+  rectangulosFiltrados.forEach((r) => {
+    resultado.push({
+      id: r.id,
+      base: r.base,
+      altura: r.altura,
+      perimetro: 2 * (r.base + r.altura),
+      superficie: r.base * r.altura,
+      cuadrado: r.base === r.altura,
+    });
+  });
 
   res.send(resultado);
 });
 
-// GET para consultar un rectángulo por id
 app.get("/rectangulos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -73,7 +75,6 @@ app.get("/rectangulos/:id", (req, res) => {
   res.send(resultado);
 });
 
-// POST para crear un rectángulo
 app.post("/rectangulos", (req, res) => {
   const { base, altura } = req.body;
 
@@ -84,8 +85,8 @@ app.post("/rectangulos", (req, res) => {
   if (
     typeof base !== "number" ||
     typeof altura !== "number" ||
-    !Number.isFinite(base) ||
-    !Number.isFinite(altura) ||
+    isNaN(base) ||
+    isNaN(altura) ||
     base <= 0 ||
     altura <= 0
   ) {
@@ -103,11 +104,10 @@ app.post("/rectangulos", (req, res) => {
   res.status(201).send(nuevoRectangulo);
 });
 
-// PUT para modificar un rectángulo
 app.put("/rectangulos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -126,8 +126,8 @@ app.put("/rectangulos/:id", (req, res) => {
   if (
     typeof base !== "number" ||
     typeof altura !== "number" ||
-    !Number.isFinite(base) ||
-    !Number.isFinite(altura) ||
+    isNaN(base) ||
+    isNaN(altura) ||
     base <= 0 ||
     altura <= 0
   ) {
@@ -140,11 +140,10 @@ app.put("/rectangulos/:id", (req, res) => {
   res.send(rectanguloEncontrado);
 });
 
-// DELETE para eliminar un rectángulo
 app.delete("/rectangulos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 

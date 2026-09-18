@@ -17,9 +17,10 @@ app.get("/", (req, res) => {
   res.send("API de alumnos funcionando");
 });
 
-// GET para consultar todos los alumnos
 app.get("/alumnos", (req, res) => {
-  const resultado = alumnos.map((alumno) => {
+  let resultado = [];
+
+  alumnos.forEach((alumno) => {
     const promedio =
       (alumno.notas[0] + alumno.notas[1] + alumno.notas[2]) / 3;
 
@@ -33,23 +34,22 @@ app.get("/alumnos", (req, res) => {
       condicion = "promocionado";
     }
 
-    return {
+    resultado.push({
       id: alumno.id,
       nombre: alumno.nombre,
       notas: alumno.notas,
-      promedio,
-      condicion,
-    };
+      promedio: promedio,
+      condicion: condicion,
+    });
   });
 
   res.send(resultado);
 });
 
-// GET para consultar un alumno
 app.get("/alumnos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -76,12 +76,11 @@ app.get("/alumnos/:id", (req, res) => {
     id: alumno.id,
     nombre: alumno.nombre,
     notas: alumno.notas,
-    promedio,
-    condicion,
+    promedio: promedio,
+    condicion: condicion,
   });
 });
 
-// POST para crear alumno
 app.post("/alumnos", (req, res) => {
   const { nombre, notas } = req.body;
 
@@ -90,28 +89,26 @@ app.post("/alumnos", (req, res) => {
   }
 
   if (typeof nombre !== "string" || nombre.trim() === "") {
-    return res.status(400).send("El nombre debe ser un texto válido");
+    return res.status(400).send("El nombre debe ser válido");
   }
 
-  if (!Array.isArray(notas) || notas.length !== 3) {
+  if (notas.length !== 3) {
     return res.status(400).send("El alumno debe tener exactamente 3 notas");
   }
 
-  for (let nota of notas) {
+  for (let i = 0; i < notas.length; i++) {
     if (
-      typeof nota !== "number" ||
-      !Number.isFinite(nota) ||
-      nota < 0 ||
-      nota > 10
+      typeof notas[i] !== "number" ||
+      isNaN(notas[i]) ||
+      notas[i] < 0 ||
+      notas[i] > 10
     ) {
-      return res.status(400).send("Las notas deben estar entre 0 y 10");
+      return res.status(400).send("Las notas deben ser números entre 0 y 10");
     }
   }
 
-  const nombreNormalizado = nombre.trim().toLocaleLowerCase();
-
   const alumnoExistente = alumnos.find(
-    (a) => a.nombre.toLocaleLowerCase() === nombreNormalizado,
+    (a) => a.nombre.toLocaleLowerCase() === nombre.toLocaleLowerCase(),
   );
 
   if (alumnoExistente) {
@@ -120,7 +117,7 @@ app.post("/alumnos", (req, res) => {
 
   const nuevoAlumno = {
     id: nextId++,
-    nombre: nombre.trim(),
+    nombre,
     notas,
   };
 
@@ -129,11 +126,10 @@ app.post("/alumnos", (req, res) => {
   res.status(201).send(nuevoAlumno);
 });
 
-// PUT para modificar alumno
 app.put("/alumnos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -150,47 +146,44 @@ app.put("/alumnos/:id", (req, res) => {
   }
 
   if (typeof nombre !== "string" || nombre.trim() === "") {
-    return res.status(400).send("El nombre debe ser un texto válido");
+    return res.status(400).send("El nombre debe ser válido");
   }
 
-  if (!Array.isArray(notas) || notas.length !== 3) {
+  if (notas.length !== 3) {
     return res.status(400).send("El alumno debe tener exactamente 3 notas");
   }
 
-  for (let nota of notas) {
+  for (let i = 0; i < notas.length; i++) {
     if (
-      typeof nota !== "number" ||
-      !Number.isFinite(nota) ||
-      nota < 0 ||
-      nota > 10
+      typeof notas[i] !== "number" ||
+      isNaN(notas[i]) ||
+      notas[i] < 0 ||
+      notas[i] > 10
     ) {
-      return res.status(400).send("Las notas deben estar entre 0 y 10");
+      return res.status(400).send("Las notas deben ser números entre 0 y 10");
     }
   }
 
-  const nombreNormalizado = nombre.trim().toLocaleLowerCase();
-
   const alumnoExistente = alumnos.find(
     (a) =>
-      a.id !== id &&
-      a.nombre.toLocaleLowerCase() === nombreNormalizado,
+      a.nombre.toLocaleLowerCase() === nombre.toLocaleLowerCase() &&
+      a.id !== id,
   );
 
   if (alumnoExistente) {
-    return res.status(400).send("Ya existe otro alumno con ese nombre");
+    return res.status(400).send("Ya existe un alumno con ese nombre");
   }
 
-  alumnoEncontrado.nombre = nombre.trim();
+  alumnoEncontrado.nombre = nombre;
   alumnoEncontrado.notas = notas;
 
   res.send(alumnoEncontrado);
 });
 
-// DELETE para eliminar alumno
 app.delete("/alumnos/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 

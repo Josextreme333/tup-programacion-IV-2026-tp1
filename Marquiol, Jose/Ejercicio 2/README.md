@@ -1,43 +1,44 @@
-# Ejercicio 2 - Alumnos y calificaciones
+# Ejercicio 2
 
-## Decisiones de diseño
+## Diseño
 
-Para representar a los alumnos se utiliza un arreglo interno llamado `alumnos`. Cada alumno contiene un identificador, un nombre y un arreglo con exactamente tres notas.
+La información se modela mediante un arreglo interno llamado `alumnos`.
 
-Se decidió almacenar las tres notas dentro de un arreglo porque forman parte de la información propia de cada alumno y la consigna indica que deben conservarse de esta manera.
+Cada alumno contiene:
 
-El promedio y la condición académica no se almacenan, ya que son datos derivados de las notas. Estos valores se calculan cuando se realiza una consulta.
+* `id`
+* `nombre`
+* `notas`
 
-Cada alumno posee un `id` para poder identificarlo individualmente en las operaciones de consulta, modificación y eliminación.
+Las notas se almacenan en un arreglo interno con exactamente tres valores.
 
-## Métodos HTTP
+El promedio y la condición académica no se almacenan porque son datos derivados de las notas.
 
-Se utilizaron los siguientes métodos:
+## Métodos
 
-* `GET /alumnos`: permite consultar todos los alumnos junto con sus notas, promedio y condición.
-* `GET /alumnos/:id`: permite consultar un alumno específico junto con sus notas, promedio y condición.
-* `POST /alumnos`: permite crear un nuevo alumno.
-* `PUT /alumnos/:id`: permite modificar un alumno existente.
-* `DELETE /alumnos/:id`: permite eliminar un alumno.
+* `GET /alumnos`: obtiene todos los alumnos junto con su promedio y condición.
+* `GET /alumnos/:id`: obtiene un alumno específico junto con su promedio y condición.
+* `POST /alumnos`: crea un nuevo alumno.
+* `PUT /alumnos/:id`: modifica un alumno existente.
+* `DELETE /alumnos/:id`: elimina un alumno.
+
+## Condición académica
+
+La condición se obtiene a partir del promedio de las tres notas:
+
+* Promedio menor a 6: `reprobado`.
+* Promedio igual a 6 o menor a 7: `aprobado`.
+* Promedio igual o mayor a 8: `promocionado`.
 
 ## Validaciones
 
-Al crear y modificar un alumno se verifica que el nombre sea un texto no vacío.
+Se valida que:
 
-También se verifica que el alumno tenga exactamente tres notas y que cada una sea un número entre 0 y 10.
+* El `id` sea válido.
+* El nombre esté presente y no esté vacío.
+* El alumno tenga exactamente tres notas.
+* Las notas sean números entre 0 y 10.
+* No existan dos alumnos con el mismo nombre.
+* Al modificar un alumno, no se pueda utilizar el nombre de otro alumno existente.
 
-No se permiten alumnos con el mismo nombre. Para realizar esta comprobación se comparan los nombres sin diferenciar mayúsculas y minúsculas.
-
-El `id` utilizado en las rutas debe ser un número entero positivo.
-
-## Promedio y condición
-
-El promedio se obtiene sumando las tres notas y dividiendo el resultado por tres.
-
-La condición académica se determina de la siguiente manera:
-
-* Promedio menor a 6: `reprobado`.
-* Promedio desde 6 y menor a 8: `aprobado`.
-* Promedio de 8 o superior: `promocionado`.
-
-Estos dos datos se calculan al realizar la consulta y no se almacenan dentro del arreglo interno.
+El nombre se compara sin distinguir entre mayúsculas y minúsculas.

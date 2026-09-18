@@ -17,7 +17,6 @@ app.get("/", (req, res) => {
   res.send("API de tareas funcionando");
 });
 
-// GET para consultar tareas
 app.get("/tareas", (req, res) => {
   let tareasFiltradas = [...tareas];
 
@@ -38,11 +37,10 @@ app.get("/tareas", (req, res) => {
   res.send(tareasFiltradas);
 });
 
-// GET para consultar una tarea
 app.get("/tareas/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -55,7 +53,6 @@ app.get("/tareas/:id", (req, res) => {
   res.send(tarea);
 });
 
-// POST para crear una tarea
 app.post("/tareas", (req, res) => {
   const { nombre, completada } = req.body;
 
@@ -64,17 +61,15 @@ app.post("/tareas", (req, res) => {
   }
 
   if (typeof nombre !== "string" || nombre.trim() === "") {
-    return res.status(400).send("El nombre debe ser un texto válido");
+    return res.status(400).send("El nombre debe ser válido");
   }
 
   if (typeof completada !== "boolean") {
-    return res.status(400).send("El estado debe ser true o false");
+    return res.status(400).send("Completada debe ser true o false");
   }
 
-  const nombreNormalizado = nombre.trim().toLocaleLowerCase();
-
   const tareaExistente = tareas.find(
-    (t) => t.nombre.toLocaleLowerCase() === nombreNormalizado,
+    (t) => t.nombre.toLocaleLowerCase() === nombre.toLocaleLowerCase(),
   );
 
   if (tareaExistente) {
@@ -83,7 +78,7 @@ app.post("/tareas", (req, res) => {
 
   const nuevaTarea = {
     id: nextId++,
-    nombre: nombre.trim(),
+    nombre,
     completada,
   };
 
@@ -92,11 +87,10 @@ app.post("/tareas", (req, res) => {
   res.status(201).send(nuevaTarea);
 });
 
-// PUT para modificar una tarea
 app.put("/tareas/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
@@ -113,36 +107,33 @@ app.put("/tareas/:id", (req, res) => {
   }
 
   if (typeof nombre !== "string" || nombre.trim() === "") {
-    return res.status(400).send("El nombre debe ser un texto válido");
+    return res.status(400).send("El nombre debe ser válido");
   }
 
   if (typeof completada !== "boolean") {
-    return res.status(400).send("El estado debe ser true o false");
+    return res.status(400).send("Completada debe ser true o false");
   }
-
-  const nombreNormalizado = nombre.trim().toLocaleLowerCase();
 
   const tareaExistente = tareas.find(
     (t) =>
-      t.id !== id &&
-      t.nombre.toLocaleLowerCase() === nombreNormalizado,
+      t.nombre.toLocaleLowerCase() === nombre.toLocaleLowerCase() &&
+      t.id !== id,
   );
 
   if (tareaExistente) {
-    return res.status(400).send("Ya existe otra tarea con ese nombre");
+    return res.status(400).send("Ya existe una tarea con ese nombre");
   }
 
-  tareaEncontrada.nombre = nombre.trim();
+  tareaEncontrada.nombre = nombre;
   tareaEncontrada.completada = completada;
 
   res.send(tareaEncontrada);
 });
 
-// DELETE para eliminar una tarea
 app.delete("/tareas/:id", (req, res) => {
   const id = Number(req.params.id);
 
-  if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+  if (isNaN(id) || id <= 0) {
     return res.status(400).send("Id inválido");
   }
 
